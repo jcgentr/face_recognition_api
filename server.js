@@ -1,9 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt-nodejs');
+const cors = require('cors');
 
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cors());
 
 const database = { // updates do not persist if server restarts
     users: [
@@ -39,10 +42,19 @@ app.get('/', (req, res) => {
 /image => PUT, res: user
 */
 
+// send sensitive info over HTTPS POST and hash/encrypt passwords
 app.post('/signin', (req, res) => {
-    if(req.body.email === database.users[0].email &&
+    // Load hash from your password DB.
+    // bcrypt.compare("soccer", "$2a$10$iVefifwaCH/lcbhm6SS5EuDVpqqsgHOH.C3joU0ZAsXL5O3sozALe", function(err, res) {
+    //     console.log('correct password:', res);
+    // });
+    // bcrypt.compare("veggies", "$2a$10$iVefifwaCH/lcbhm6SS5EuDVpqqsgHOH.C3joU0ZAsXL5O3sozALe", function(err, res) {
+    //     console.log('wrong password:', res);
+    // });
+    // only checking first user right now
+    if(req.body.email === database.users[0].email && 
        req.body.password === database.users[0].password) {
-        res.json("SUCCESSful Signin");
+        res.json(database.users[0]);
     } else {
         res.status(400).json("error signing in");
     }
@@ -50,6 +62,9 @@ app.post('/signin', (req, res) => {
 
 app.post('/register', (req, res) => {
     const { email, name, password } = req.body;
+    bcrypt.hash(password, null, null, function(err, hash) {
+        console.log(hash);
+    });
     database.users.push({
         id: '777',
         name: name,
@@ -74,7 +89,7 @@ app.get('/profile/:id', (req, res) => {
         res.status(404).json("No such user found");
     }
 });
-
+// use PUT request for updates
 app.put('/image', (req, res) => {
     const { id } = req.body;
     let isFound = false;
