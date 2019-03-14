@@ -28,7 +28,7 @@ app.use(cors());
 // routes
 // ROOT
 app.get('/', (req, res) => {
-    res.send(database.users);
+    res.send('IT IS WORKING!');
 });
 
 /* endpoints
@@ -47,8 +47,8 @@ app.get('/profile/:id', (req, res) => { profile.handleProfileGet(req, res, db) }
 app.put('/image', (req, res) => { image.handleImage(req, res, db) });
 app.post('/imageurl', (req, res) => { image.handleAPIcall(req, res) });
 
-app.listen(3000, () => {
-    console.log("server is running on port 3000");
+app.listen(process.env.PORT || 3000, () => {
+    console.log(`Server is running on port ${process.env.PORT}`);
 });
 
 
